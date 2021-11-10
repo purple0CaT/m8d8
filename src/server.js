@@ -39,6 +39,7 @@ io.on("connection", (socket) => {
   });
   //
   socket.on("sendMess", async ({ username, room, message }) => {
+    socket.join(room);
     const newMessage = {
       username,
       message: message,
@@ -49,9 +50,10 @@ io.on("connection", (socket) => {
       { room },
       {
         $push: { chatHistory: newMessage },
-      }
+      },
+      { new: true }
     );
-    socket.to(room).emit("message", newMessage);
+    socket.to(room).emit("messages", newMessage);
   });
   socket.on("disconnectUser", async ({ room, username }) => {
     let findRoom = await RoomSchema.findOne({ room });
@@ -61,11 +63,12 @@ io.on("connection", (socket) => {
   });
   //
   socket.on("disconnect", async () => {
-    // console.log({ username, room });
     // const rooms = await RoomSchema.find();
     // console.log(rooms);
-    // rooms.filter((r) => r.onlineUsers.filter((u) => u.socketId !== socket.id));
-    // console.log(rooms);
+    // const filterUser = rooms.filter((r) =>
+    //   r.onlineUsers.some((u) => u.socketId !== socket.id)
+    // );
+    // console.log(filterUser);
     // await rooms.save();
     // thisRoom.onlineUsers.filter((u) => u !== username);
     // await thisRoom.save();
