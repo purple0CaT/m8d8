@@ -22,6 +22,7 @@ const io = new Server(httpServer);
 io.on("connection", (socket) => {
   //
   socket.on("setUsername", async ({ username, room }) => {
+    if (!room) room = socket.id;
     socket.join(room);
     const thisRoom = await RoomSchema.findOne({ room: room });
     if (thisRoom) {
