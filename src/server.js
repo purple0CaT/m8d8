@@ -52,10 +52,20 @@ io.on("connection", (socket) => {
     );
     socket.to(room).emit("message", newMessage);
   });
+  socket.on("disconnectUser", async ({ room, username }) => {
+    let findRoom = await RoomSchema.findOne({ room });
+    const list = findRoom.onlineUsers.filter((u) => u.username !== username);
+    findRoom.onlineUsers = list;
+    await findRoom.save();
+  });
   //
   socket.on("disconnect", async () => {
     // console.log({ username, room });
-    // const thisRoom = await RoomSchema.findOne({ room: room });
+    // const rooms = await RoomSchema.find();
+    // console.log(rooms);
+    // rooms.filter((r) => r.onlineUsers.filter((u) => u.socketId !== socket.id));
+    // console.log(rooms);
+    // await rooms.save();
     // thisRoom.onlineUsers.filter((u) => u !== username);
     // await thisRoom.save();
     console.log("Disconected ->", socket.id);
